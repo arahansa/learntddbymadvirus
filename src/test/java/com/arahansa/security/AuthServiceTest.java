@@ -1,5 +1,8 @@
 package com.arahansa.security;
 
+import com.arahansa.domain.Authentication;
+import com.arahansa.domain.User;
+import com.arahansa.domain.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;

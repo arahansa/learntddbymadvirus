@@ -1,4 +1,4 @@
-package com.arahansa.security;
+package com.arahansa.domain;
 
 /**
  * Created by jarvis on 2016. 10. 11..
