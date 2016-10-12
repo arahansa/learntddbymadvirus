@@ -3,7 +3,6 @@ package com.arahansa.security;
 import com.arahansa.domain.Authentication;
 import com.arahansa.domain.User;
 import com.arahansa.domain.UserRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,6 +56,20 @@ public class AuthServiceTest {
     assertIllegalArgExThrown(USER_ID, null);
   }
 
+  private void assertIllegalArgExThrown(String id, String userPassword) {
+    assertExceptionThrown(id, userPassword, IllegalArgumentException.class);
+  }
+
+  private void assertExceptionThrown(String id, String userPassword, Class<? extends Exception> type) {
+    Exception thrownEx = null;
+    try {
+      authService.authenticate(id, userPassword);
+    } catch (Exception e) {
+      thrownEx = e;
+    }
+    assertThat(thrownEx, instanceOf(type));
+  }
+
   @Test
   public void whenUserNotFound_throwNonExistingUserEx(){
     assertExceptionThrown(NO_USER_ID, USER_PASSWORD, NonExistingUserException.class);
@@ -80,60 +93,6 @@ public class AuthServiceTest {
   }
 
 
-  private void assertIllegalArgExThrown(String id, String userPassword) {
-    assertExceptionThrown(id, userPassword, IllegalArgumentException.class);
-  }
 
-  private void assertExceptionThrown(String id, String userPassword, Class<? extends Exception> type) {
-    Exception thrownEx = null;
-    try {
-      authService.authenticate(id, userPassword);
-    } catch (Exception e) {
-      thrownEx = e;
-    }
-    assertThat(thrownEx, instanceOf(type));
-  }
-
-  private class AuthService {
-
-    UserRepository userRepository;
-
-    public void setUserRepository(UserRepository userRepository) {
-      this.userRepository = userRepository;
-    }
-
-    public Authentication authenticate(String id, String password) {
-      assertIdAndPw(id, password);
-      User user = findUserOrThrowEx(id);
-      throwExIfPasswordWrong(password, user);
-      return createAuthentication(user);
-    }
-
-    private void assertIdAndPw(String id, String password) {
-      if(StringUtils.isBlank(id)) throw new IllegalArgumentException();
-      if(StringUtils.isBlank(password)) throw new IllegalArgumentException();
-    }
-
-    private User findUserOrThrowEx(String id) {
-      User user = findUserById(id);
-      if(user == null)
-        throw new NonExistingUserException();
-      return user;
-    }
-
-    private void throwExIfPasswordWrong(String password, User user) {
-      if( !user.matchPassword(password))
-        throw new WrongPasswordException();
-    }
-
-    private Authentication createAuthentication(User user) {
-      return new Authentication(user.getId());
-    }
-
-    private User findUserById(String id) {
-      return userRepository.findById(id);
-    }
-
-  }
 
 }
