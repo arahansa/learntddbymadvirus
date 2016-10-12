@@ -33,6 +33,7 @@ public class AuthService {
 
   private User findUserOrThrowEx(String id) {
     User user = findUserById(id);
+    log.debug("User : {}", user);
     if (user == null)
       throw new NonExistingUserException();
     return user;
